@@ -11,12 +11,12 @@ class Ship(pg.sprite.Sprite):
 
         self.settings = config
 
+        self.lifes = self.settings.ship_lifes
         self.y_speed = self.settings.ship_speed
         self.state = self.settings.ship_states['alive']
 
         self.image = pg.image.load(os.path.join(self.settings.folders.images_folder, 'ship_1_48x48.xcf'))
         self.explosion_animation_image = self.__load_explosion_images()
-        # self.explosion_sound = pg.mixer.music.load(os.path.join(self.settings.folders.sounds_folder, 'explosion.wav'))
         self.rect = self.image.get_rect(x=x, y=y)
 
         self.ix_explosion = 0
@@ -36,6 +36,7 @@ class Ship(pg.sprite.Sprite):
             return self.__exploding(dt)
 
         elif self.state == self.settings.ship_states['dead']:
+            self.lifes -= 1
             self.reset()
 
         else:

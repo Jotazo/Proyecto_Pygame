@@ -14,12 +14,24 @@ class Settings:
 
         # Screen Settings
         self.game_dimensions = (800, 600)
-        self.FPS = 60
+        self.FPS = 100
 
         # Sound Settings
         pg.mixer.init()
         self.background_sound = pg.mixer.Sound(os.path.join(self.folders.sounds_folder, 'background_sound.ogg'))
         self.ship_explosion = pg.mixer.Sound(os.path.join(self.folders.sounds_folder, 'explosion.wav'))
+
+        # Font Settings
+        self.main_game_fonts = {
+            1:{
+                'source':os.path.join(self.folders.fonts_folder, 'Space_font.ttf'),
+                'size':16,
+            },
+            2:{
+                'source':os.path.join(self.folders.fonts_folder, 'Space_font2.ttf'),
+                'size':24,
+            }
+        }
 
         # Meteor Settings
         self.max_meteors = 7
@@ -64,7 +76,6 @@ class Settings:
             'exploding':'e',
             'dead':'d'
         }
-        
 
         # RGB Colors
         self.colors = {
