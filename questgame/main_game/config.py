@@ -16,6 +16,11 @@ class Settings:
         self.game_dimensions = (800, 600)
         self.FPS = 60
 
+        # Sound Settings
+        pg.mixer.init()
+        self.background_sound = pg.mixer.Sound(os.path.join(self.folders.sounds_folder, 'background_sound.ogg'))
+        self.ship_explosion = pg.mixer.Sound(os.path.join(self.folders.sounds_folder, 'explosion.wav'))
+
         # Meteor Settings
         self.max_meteors = 7
         self.list_meteors = {
@@ -50,6 +55,7 @@ class Settings:
                 'points':20,
             }
         }
+
         # Ship Settings
         self.ship_speed = 7
         self.ship_lifes = 3
@@ -58,6 +64,7 @@ class Settings:
             'exploding':'e',
             'dead':'d'
         }
+        
 
         # RGB Colors
         self.colors = {

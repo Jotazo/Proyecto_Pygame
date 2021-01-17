@@ -13,3 +13,4 @@ class Folders:
         self.images_folder = os.path.join(self.resources_folder, 'images')
         self.images_folder_meteors = os.path.join(self.images_folder, 'meteors')
         self.images_folder_explosion = os.path.join(self.images_folder, 'explosion')
+        self.sounds_folder = os.path.join(self.resources_folder, 'sounds')

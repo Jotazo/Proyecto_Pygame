@@ -30,7 +30,11 @@ class Game:
         self.meteors_dodged = 0
         self.score = 0
 
-        # Other config
+        # Sounds Configuration
+        self.background_sound = self.settings.background_sound
+        self.background_sound.set_volume(0.02)
+        self.background_sound.play(-1)
+
         self.lifes = self.settings.ship_lifes
         self.__top_level_frame()
         
@@ -40,6 +44,7 @@ class Game:
         The main loop game.
         """
         # TODO: End Level
+        # 
         while self.lifes > 0:
             dt = self.clock.tick(self.settings.FPS)
             # Events    
@@ -47,7 +52,7 @@ class Game:
                 if event.type == pg.QUIT:
                     pg.quit()
                     sys.exit()
-
+            
             # Check for ship states
             if self.ship.state == self.settings.ship_states['dead']:
                 self.__reset_screen()
@@ -118,9 +123,14 @@ class Game:
         Method that checks if ship and meteor has collided.
         """
         colision = pg.sprite.spritecollide(self.ship, self.meteors, False)
-        if colision:
+
+        if colision and self.ship.state != self.settings.ship_states['exploding']:
+
             self.ship.state = self.settings.ship_states['exploding']
-            # TODO: parar pantalla y mostrar animación
+            self.background_sound.stop()
+            self.settings.ship_explosion.set_volume(0.02)
+            self.settings.ship_explosion.play()
+            # TODO: parar pantalla
 
     def __top_level_frame(self):
         # Top level
@@ -150,4 +160,5 @@ class Game:
         self.meteors_dodged = 0
         self.meteors.empty()
         self.lifes -= 1
+        self.background_sound.play()
         

@@ -16,6 +16,7 @@ class Ship(pg.sprite.Sprite):
 
         self.image = pg.image.load(os.path.join(self.settings.folders.images_folder, 'ship_1_48x48.xcf'))
         self.explosion_animation_image = self.__load_explosion_images()
+        # self.explosion_sound = pg.mixer.music.load(os.path.join(self.settings.folders.sounds_folder, 'explosion.wav'))
         self.rect = self.image.get_rect(x=x, y=y)
 
         self.ix_explosion = 0
