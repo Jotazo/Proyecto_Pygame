@@ -14,7 +14,7 @@ class Settings:
 
         # Screen Settings
         self.game_dimensions = (800, 600)
-        self.FPS = 100
+        self.FPS = 80
 
         # Sound Settings
         pg.mixer.init()
@@ -23,13 +23,17 @@ class Settings:
 
         # Font Settings
         self.main_game_fonts = {
-            1:{
+            'default':{
                 'source':os.path.join(self.folders.fonts_folder, 'Space_font.ttf'),
                 'size':16,
             },
-            2:{
+            'ready':{
                 'source':os.path.join(self.folders.fonts_folder, 'Space_font2.ttf'),
-                'size':24,
+                'size':54,
+            },
+            'black screen':{
+                'source':os.path.join(self.folders.fonts_folder, 'Space_font2.ttf'),
+                'size':32,
             }
         }
 

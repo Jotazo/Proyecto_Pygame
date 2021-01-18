@@ -3,7 +3,7 @@ import sys
 import random
 import os
 
-from questgame.main_game import ship, meteor, config, toplevelframe
+from questgame.main_game import ship, meteor, config, toplevelframe, initial_screen, blackscreen
 
 class Game:
 
@@ -19,6 +19,10 @@ class Game:
         self.image = pg.image.load(os.path.join(self.settings.folders.images_folder, 'background.xcf'))
         self.rect = self.image.get_rect()
 
+        self.planet_img = pg.image.load(os.path.join(self.settings.folders.images_folder, 'planet2.png'))
+        self.rect_planet_img = self.planet_img.get_rect()
+        self.planet_x = 700
+
         self.background_x = 0 # For background movement
         self.ix = 0 # For speed create meteors
 
@@ -26,38 +30,50 @@ class Game:
         self.score = 0
 
         # Instances
-        self.top_label_frame = toplevelframe.TopLevelFrame(self.settings)
+        self.top_level_frame = toplevelframe.TopLevelFrame(self.settings)
         self.ship = ship.Ship(2, 300, self.settings)
         self.meteors = pg.sprite.Group()
         self.clock = pg.time.Clock()
+        self.initial_screen = initial_screen.InitialScreen(self.screen, self.image, self.ship, self.top_level_frame, self.settings, self.clock)
+        self.black_screen = blackscreen.BlackScreen(self.screen, self.settings)
 
         # Sounds Configuration
         self.background_sound = self.settings.background_sound
         self.background_sound.set_volume(0.02)
         self.background_sound.play(-1)
-        
-    def main_loop(self):
+
+    def game_screen(self):
+        # TODO: INTRO SCREEN
+        self.initial_screen.starting_screen()
+        self.playing_screen()
+        # TODO: RECORDS SCREEN
+
+    def playing_screen(self):
         """
-        The main loop game.
+        The playing screen game.
         """
-        # TODO: End Level
-        self.initial_screen()
-        while self.ship.lifes > 0:
+        game_over = False
+        while not game_over:
             dt = self.clock.tick(self.settings.FPS)
             self.__handle_events()
             # Check for ship states
+            
             if self.ship.state == self.settings.ship_states['dead']:
+                self.black_screen.show_black_screen(self.ship.lifes)
                 self.__reset_screen()
+
             else:
                 self.__ship_meteor_colision()
                 self.__add_meteor(self.ix)
                 self.__update_meteors()
-                self.top_label_frame.update(self.ship.lifes, self.score, self.meteors_dodged)
+                self.top_level_frame.update(self.ship.lifes, self.score, self.meteors_dodged)
             
             self.ship.update(dt)
-            self.__update_screen(self.background_x)
-                
-            self.background_x -= 1
+            self.__update_screen()
+
+            if self.ship.lifes == 0:
+                game_over = True 
+
             self.ix += 1
 
     def __add_meteor(self, timer):
@@ -95,16 +111,18 @@ class Game:
                 self.meteors_dodged += 1
                 self.score += self.settings.list_meteors[meteor.meteor_selected]['points']
 
-    def __update_screen(self, x):
+    def __update_screen(self):
         """
         Method that blit all the needed for our screen.
         """
 
         # Background blit
-        x_rel = x % self.rect.width
+        x_rel = self.background_x % self.rect.width
         self.screen.blit(self.image, (x_rel - self.rect.width ,0))
         if x_rel < self.settings.game_dimensions[0]:
             self.screen.blit(self.image, (x_rel,0))
+
+        self.background_x -= 1
 
         # Meteors blit
         for meteor in self.meteors:
@@ -114,17 +132,25 @@ class Game:
         self.screen.blit(self.ship.image, (self.ship.rect.x, self.ship.rect.y))
 
         # Top level blit
-        self.screen.blit(self.top_label_frame.top_image, (0,0))
-        self.screen.blit(self.top_label_frame.lifes_count_img, (50, 12))
-        self.screen.blit(self.top_label_frame.dodged_meteors_img, (250, 12))
-        self.screen.blit(self.top_label_frame.score_count_img, (600, 12))
+        self.screen.blit(self.top_level_frame.top_image, (0,0))
+        self.screen.blit(self.top_level_frame.lifes_count_img, (50, 15))
+        self.screen.blit(self.top_level_frame.dodged_meteors_img, (250, 15))
+        self.screen.blit(self.top_level_frame.score_count_img, (600, 15))
 
+        if self.meteors_dodged >= 10:
+            if self.planet_x >= 400:
+                self.screen.blit(self.planet_img, (self.planet_x, 35))
+                self.planet_x -= 1
+            else:
+                self.screen.blit(self.planet_img, (self.planet_x, 35))
+                
         pg.display.flip()
 
     def __ship_meteor_colision(self):
         """
         Method that checks if ship and meteor has collided.
         """
+
         colision = pg.sprite.spritecollide(self.ship, self.meteors, False)
 
         if colision and self.ship.state != self.settings.ship_states['exploding']:
@@ -133,40 +159,11 @@ class Game:
             self.background_sound.stop()
             self.settings.ship_explosion.set_volume(0.02)
             self.settings.ship_explosion.play()
-            # TODO: parar pantalla
 
     def __reset_screen(self):
         self.background_x = 0
         self.ix = 0
+        self.planet_x = 700
         self.meteors_dodged = 0
         self.meteors.empty()
-        # self.lifes -= 1
         self.background_sound.play()
-        
-    def initial_screen(self):
-        # TODO: Class for initial screen?
-        start = False
-        x = 0
-        y = -50
-        while not start:
-            dt = pg.time.Clock()
-            dt.tick(self.settings.FPS)
-            for event in pg.event.get():
-                if event.type == pg.QUIT:
-                    pg.quit()
-                    sys.exit()
-                if event.type == pg.KEYDOWN:
-                    if event.key == pg.K_SPACE:
-                        start = True
-            
-            self.screen.blit(self.image, (0,0))
-            self.screen.blit(self.top_label_frame.top_image, (0, y))
-            self.screen.blit(self.top_label_frame.lifes_count_img, (50, y+12))
-            self.screen.blit(self.top_label_frame.dodged_meteors_img, (250, y+12))
-            self.screen.blit(self.top_label_frame.score_count_img, (600, y+12))
-            self.screen.blit(self.ship.image, (y+2, 307))
-            x += 1
-            if x % 5 == 0 and y < 0:
-                y += 1
-            pg.display.flip()
-            

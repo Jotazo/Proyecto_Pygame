@@ -27,16 +27,19 @@ class Ship(pg.sprite.Sprite):
 
     def update(self, dt):
         """
-        The update method from Ship where we check if the top of ship
-        get the min screen size or 0 and if the bottom of the ship get
-        the max size screen and stops the ship. Then we check the
-        moving ship method.
+        The update method from Ship where we check, first of all, the
+        state of our ship, 'alive', 'exploding' and 'dead'. 
+        If the ship is alive, we check the top and bottom margin and
+        we call to moving_ship()
+        If the ship is exploding, we return the animation exploding()
+        And, if the ship is dead, we take off a ship life and call
+        reset()
         """
         if self.state == self.settings.ship_states['exploding']:
             return self.__exploding(dt)
 
         elif self.state == self.settings.ship_states['dead']:
-            self.lifes -= 1
+
             self.reset()
 
         else:
@@ -52,9 +55,8 @@ class Ship(pg.sprite.Sprite):
     def __moving_ship(self):
         """
         Method that checks wich keys get pressed and move the ship
-        in the correct direction.
+        in that direction.
         """
-
         key_pressed = pg.key.get_pressed()
         
         if key_pressed[K_UP]:
@@ -65,11 +67,18 @@ class Ship(pg.sprite.Sprite):
             self.y_speed = 0
 
     def __load_explosion_images(self):
+        """
+        Method that returns a list with all the explosion images
+        """
         return [pg.image.load(os.path.join(self.settings.folders.images_folder_explosion, f'explosion_{x}.xcf')) for x in range(8)]
-    
+
     def __exploding(self, dt):
+        """
+        Method that shows the explosion animation
+        """
         if self.ix_explosion >= len(self.explosion_animation_image):
             self.state = self.settings.ship_states['dead']
+            self.lifes -= 1
             return
 
         self.image = self.explosion_animation_image[self.ix_explosion]
@@ -80,6 +89,10 @@ class Ship(pg.sprite.Sprite):
             self.ticks = 0
 
     def reset(self):
+        """
+        Method that reset the ship state and image, and de vars for the
+        explosion animation
+        """
         self.state = self.settings.ship_states['alive']
         self.image = pg.image.load(os.path.join(self.settings.folders.images_folder, 'ship_1_48x48.xcf'))
         self.ix_explosion = 0

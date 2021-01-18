@@ -10,13 +10,13 @@ class TopLevelFrame:
         self.top_image = pg.image.load(os.path.join(self.settings.folders.images_folder, 'score1.png'))
         self.top_image_rect = self.top_image.get_rect()
 
-        self.lifes_count_font = pg.font.Font(self.settings.main_game_fonts[1]['source'], self.settings.main_game_fonts[1]['size'])
+        self.lifes_count_font = pg.font.Font(self.settings.main_game_fonts['default']['source'], self.settings.main_game_fonts['default']['size'])
         self.lifes_count_img = self.lifes_count_font.render(f'Lifes - 3', True, self.settings.colors['white'])
 
-        self.score_count_font = pg.font.Font(self.settings.main_game_fonts[1]['source'], self.settings.main_game_fonts[1]['size'])
+        self.score_count_font = pg.font.Font(self.settings.main_game_fonts['default']['source'], self.settings.main_game_fonts['default']['size'])
         self.score_count_img = self.score_count_font.render(f'Score - 0', True, self.settings.colors['white'])
 
-        self.dodged_meteors_font = pg.font.Font(self.settings.main_game_fonts[1]['source'], self.settings.main_game_fonts[1]['size'])
+        self.dodged_meteors_font = pg.font.Font(self.settings.main_game_fonts['default']['source'], self.settings.main_game_fonts['default']['size'])
         self.dodged_meteors_img = self.score_count_font.render(f'Dodged Meteors - 0', True, self.settings.colors['white'])        
 
     def update(self, lifes, score, meteors):
