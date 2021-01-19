@@ -4,8 +4,6 @@ import os
 
 class Ship(pg.sprite.Sprite):
 
-    _img_size = 72
-
     def __init__(self, x, y, config):
         super().__init__()
 
@@ -23,7 +21,6 @@ class Ship(pg.sprite.Sprite):
         self.delay_animation = 6
         self.ticks = 0
         self.ticks_animation = 1000//self.settings.FPS * self.delay_animation
-        
 
     def update(self, dt):
         """
@@ -39,8 +36,7 @@ class Ship(pg.sprite.Sprite):
             return self.__exploding(dt)
 
         elif self.state == self.settings.ship_states['dead']:
-
-            self.reset()
+            self.__reset()
 
         else:
             self.rect.y += self.y_speed
@@ -88,7 +84,7 @@ class Ship(pg.sprite.Sprite):
             self.ix_explosion +=1
             self.ticks = 0
 
-    def reset(self):
+    def __reset(self):
         """
         Method that reset the ship state and image, and de vars for the
         explosion animation
@@ -98,3 +94,6 @@ class Ship(pg.sprite.Sprite):
         self.ix_explosion = 0
         self.delay_animation = 6
         self.ticks = 0
+
+    def rotate(self):
+        pass

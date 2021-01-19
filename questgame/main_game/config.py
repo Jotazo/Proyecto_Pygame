@@ -38,7 +38,7 @@ class Settings:
         }
 
         # Meteor Settings
-        self.max_meteors = 7
+        self.max_meteors = 10
         self.list_meteors = {
                 1:{
                 'image': pg.image.load(os.path.join(self.folders.images_folder_meteors, 'small_meteor1.png')),
@@ -71,6 +71,7 @@ class Settings:
                 'points':20,
             }
         }
+        self.end_meteors_dodged = 20
 
         # Ship Settings
         self.ship_speed = 7
@@ -78,7 +79,8 @@ class Settings:
         self.ship_states = {
             'alive':'a',
             'exploding':'e',
-            'dead':'d'
+            'dead':'d',
+            'rotating':'r'
         }
 
         # RGB Colors

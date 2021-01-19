@@ -26,6 +26,9 @@ class Game:
         self.background_x = 0 # For background movement
         self.ix = 0 # For speed create meteors
 
+        self.land_msg = pg.font.Font(self.settings.main_game_fonts['default']['source'], self.settings.main_game_fonts['default']['size'])
+        self.land_msg_img = self.land_msg.render('Press < SPACE > for land', True, self.settings.colors['white'])
+
         self.meteors_dodged = 0
         self.score = 0
 
@@ -34,6 +37,8 @@ class Game:
         self.ship = ship.Ship(2, 300, self.settings)
         self.meteors = pg.sprite.Group()
         self.clock = pg.time.Clock()
+
+        # Starting screen and black screen Instances
         self.initial_screen = initial_screen.InitialScreen(self.screen, self.image, self.ship, self.top_level_frame, self.settings, self.clock)
         self.black_screen = blackscreen.BlackScreen(self.screen, self.settings)
 
@@ -64,26 +69,34 @@ class Game:
 
             else:
                 self.__ship_meteor_colision()
-                self.__add_meteor(self.ix)
+                self.__add_meteor(self.ix, self.meteors_dodged)
                 self.__update_meteors()
                 self.top_level_frame.update(self.ship.lifes, self.score, self.meteors_dodged)
             
             self.ship.update(dt)
             self.__update_screen()
-
+            
             if self.ship.lifes == 0:
                 game_over = True 
 
             self.ix += 1
 
-    def __add_meteor(self, timer):
+    def __add_meteor(self, timer, meteors_dodged):
         """
-        This method checks if our meteors group is lower than max_meteors and
-        if True then we add a new meteor to our meteors group
+        This method checks, first of all, if we get the max
+        meteors dodged. If not, we add a new meteor at our sprite
+        group of meteors.
+        When we get the max meteors dodged, we're gonna remove every
+        meteor we have in screen as they reach the limit
         """
-        if timer % 20 == 0:
-            if len(self.meteors) < self.settings.max_meteors:
-                self.meteors.add(meteor.Meteor(self.settings, self.meteors))
+        if meteors_dodged >= self.settings.end_meteors_dodged:
+            for mt in self.meteors:
+                if mt.rect.right <= 0:
+                    self.meteors.remove(mt)
+        else:
+            if timer % 20 == 0:
+                if len(self.meteors) < self.settings.max_meteors:
+                    self.meteors.add(meteor.Meteor(self.settings, self.meteors))
 
     def __handle_events(self):
         # Events    
@@ -95,6 +108,8 @@ class Game:
                 if event.key == pg.K_q:
                     pg.quit()
                     sys.exit()
+                if event.key == pg.K_SPACE and self.meteors_dodged >= self.settings.end_meteors_dodged:
+                    self.ship.state = self.settings.ship_states['rotating']
         
     def __update_meteors(self):
         """
@@ -102,11 +117,13 @@ class Game:
         Then, we check if meteor/meteors get the min width of our screen
         If True, we remove that meteor from our meteors group, we add a
         dodged meteor to our score, and we add de points of the meteor.
+        When we have the max meteors dodged, then we stop to adding score
+        and meteors dodged to our score box.
         """
         self.meteors.update()
 
         for meteor in self.meteors:
-            if meteor.rect.right <= 0:
+            if meteor.rect.right <= 0 and self.meteors_dodged < self.settings.end_meteors_dodged:
                 self.meteors.remove(meteor)
                 self.meteors_dodged += 1
                 self.score += self.settings.list_meteors[meteor.meteor_selected]['points']
@@ -137,18 +154,23 @@ class Game:
         self.screen.blit(self.top_level_frame.dodged_meteors_img, (250, 15))
         self.screen.blit(self.top_level_frame.score_count_img, (600, 15))
 
-        if self.meteors_dodged >= 10:
+        # End Planet and land message blit
+        if self.meteors_dodged >= self.settings.end_meteors_dodged:
             if self.planet_x >= 400:
                 self.screen.blit(self.planet_img, (self.planet_x, 35))
                 self.planet_x -= 1
             else:
                 self.screen.blit(self.planet_img, (self.planet_x, 35))
-                
+                self.screen.blit(self.land_msg_img, (200, 180))
+
         pg.display.flip()
 
     def __ship_meteor_colision(self):
         """
         Method that checks if ship and meteor has collided.
+        When ship and meteor collides, we change ship state to
+        exploding, stop background music and start explosion
+        sound.
         """
 
         colision = pg.sprite.spritecollide(self.ship, self.meteors, False)
@@ -161,6 +183,10 @@ class Game:
             self.settings.ship_explosion.play()
 
     def __reset_screen(self):
+        """
+        Method that reset the needed values for restart the game
+        """
+
         self.background_x = 0
         self.ix = 0
         self.planet_x = 700
