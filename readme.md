@@ -2,7 +2,7 @@
 
 - The game is about dodging meteors.
 
-## Configuration for develompent
+## Configuration for development
 
 - For run the game, you must to install pygame in your machine
 

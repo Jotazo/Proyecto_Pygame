@@ -21,10 +21,10 @@ class InitialScreen:
         self.ticks_animation = 1000//self.settings.FPS * self.delay_animation
 
         # Ready and start message
-        self.ready_font = pg.font.Font(self.settings.main_game_fonts['ready']['source'], self.settings.main_game_fonts['ready']['size'])
+        self.ready_font = pg.font.Font(self.settings.main_game_fonts['ready'], 54)
         self.ready_img = self.ready_font.render(f'READY?', True, self.settings.colors['white'])
 
-        self.msg_start_font = pg.font.Font(self.settings.main_game_fonts['default']['source'], self.settings.main_game_fonts['default']['size'])
+        self.msg_start_font = pg.font.Font(self.settings.main_game_fonts['default'], 16)
         self.msg_start_img = self.msg_start_font.render('Press < SPACE > to start', True, self.settings.colors['white'])
         self.rect_msg_start_img = self.msg_start_img.get_rect()
 

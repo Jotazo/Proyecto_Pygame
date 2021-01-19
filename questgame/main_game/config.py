@@ -23,18 +23,9 @@ class Settings:
 
         # Font Settings
         self.main_game_fonts = {
-            'default':{
-                'source':os.path.join(self.folders.fonts_folder, 'Space_font.ttf'),
-                'size':16,
-            },
-            'ready':{
-                'source':os.path.join(self.folders.fonts_folder, 'Space_font2.ttf'),
-                'size':54,
-            },
-            'black screen':{
-                'source':os.path.join(self.folders.fonts_folder, 'Space_font2.ttf'),
-                'size':32,
-            }
+            'default':os.path.join(self.folders.fonts_folder, 'Space_font.ttf'),
+            'ready':os.path.join(self.folders.fonts_folder, 'Space_font2.ttf'),
+            'black screen':os.path.join(self.folders.fonts_folder, 'Space_font2.ttf'),
         }
 
         # Meteor Settings
@@ -81,9 +72,9 @@ class Settings:
             'exploding':'e',
             'dead':'d',
             'rotating':'r', 
-            'rotated':'rd', 
             'landing':'l',
             'landed':'ld',
+            'disappeared':'dis'
         }
 
         # RGB Colors

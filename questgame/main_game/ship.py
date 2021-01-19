@@ -47,7 +47,7 @@ class Ship(pg.sprite.Sprite):
         elif self.state == self.settings.ship_states['rotating']:
             self.__rotate()
 
-        elif self.state == self.settings.ship_states['rotated']:
+        elif self.state == self.settings.ship_states['landing']:
             self.__landing()
 
         else:
@@ -116,8 +116,10 @@ class Ship(pg.sprite.Sprite):
             self.rect = self.rect_rotated_image
             self.angle += 1
         else:
-            self.state = self.settings.ship_states['rotated']
+            self.state = self.settings.ship_states['landing']
 
     def __landing(self):
         if self.rect.x < 525:
-            self.rect.x += 1
+            self.rect.x += 2.5
+        else:
+            self.state = self.settings.ship_states['landed']
