@@ -71,7 +71,7 @@ class Settings:
                 'points':20,
             }
         }
-        self.end_meteors_dodged = 20
+        self.end_meteors_dodged = 10
 
         # Ship Settings
         self.ship_speed = 7
@@ -80,7 +80,10 @@ class Settings:
             'alive':'a',
             'exploding':'e',
             'dead':'d',
-            'rotating':'r'
+            'rotating':'r', 
+            'rotated':'rd', 
+            'landing':'l',
+            'landed':'ld',
         }
 
         # RGB Colors

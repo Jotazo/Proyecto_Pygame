@@ -27,7 +27,7 @@ class Game:
         self.ix = 0 # For speed create meteors
 
         self.land_msg = pg.font.Font(self.settings.main_game_fonts['default']['source'], self.settings.main_game_fonts['default']['size'])
-        self.land_msg_img = self.land_msg.render('Press < SPACE > for land', True, self.settings.colors['white'])
+        self.land_msg_img = self.land_msg.render('Press < SPACE > for rotate the ship', True, self.settings.colors['white'])
 
         self.meteors_dodged = 0
         self.score = 0
@@ -72,7 +72,7 @@ class Game:
                 self.__add_meteor(self.ix, self.meteors_dodged)
                 self.__update_meteors()
                 self.top_level_frame.update(self.ship.lifes, self.score, self.meteors_dodged)
-            
+
             self.ship.update(dt)
             self.__update_screen()
             
@@ -108,7 +108,8 @@ class Game:
                 if event.key == pg.K_q:
                     pg.quit()
                     sys.exit()
-                if event.key == pg.K_SPACE and self.meteors_dodged >= self.settings.end_meteors_dodged:
+                if event.key == pg.K_SPACE and self.meteors_dodged >= self.settings.end_meteors_dodged and\
+                        (self.ship.rect.top >= 250 and self.ship.rect.bottom <= 320):
                     self.ship.state = self.settings.ship_states['rotating']
         
     def __update_meteors(self):
@@ -145,23 +146,28 @@ class Game:
         for meteor in self.meteors:
             self.screen.blit(meteor.image, (meteor.rect.x, meteor.rect.y))
 
+        # End Planet and land message blit
+        if self.meteors_dodged >= self.settings.end_meteors_dodged:
+            if self.planet_x >= 400:
+                self.planet_x -= 1
+            else:
+                if self.ship.state == self.settings.ship_states['alive']:
+                    self.screen.blit(self.land_msg_img, (60, 80))
+                    self.__rotating_zone()
+
+            self.screen.blit(self.planet_img, (self.planet_x, 35))
+
         # Ship blit
-        self.screen.blit(self.ship.image, (self.ship.rect.x, self.ship.rect.y))
+        if self.ship.state == self.settings.ship_states['rotating']:
+            self.screen.blit(self.ship.image, (self.ship.rect))
+        else:
+            self.screen.blit(self.ship.image, (self.ship.rect.x, self.ship.rect.y))
 
         # Top level blit
         self.screen.blit(self.top_level_frame.top_image, (0,0))
         self.screen.blit(self.top_level_frame.lifes_count_img, (50, 15))
         self.screen.blit(self.top_level_frame.dodged_meteors_img, (250, 15))
         self.screen.blit(self.top_level_frame.score_count_img, (600, 15))
-
-        # End Planet and land message blit
-        if self.meteors_dodged >= self.settings.end_meteors_dodged:
-            if self.planet_x >= 400:
-                self.screen.blit(self.planet_img, (self.planet_x, 35))
-                self.planet_x -= 1
-            else:
-                self.screen.blit(self.planet_img, (self.planet_x, 35))
-                self.screen.blit(self.land_msg_img, (200, 180))
 
         pg.display.flip()
 
@@ -193,3 +199,6 @@ class Game:
         self.meteors_dodged = 0
         self.meteors.empty()
         self.background_sound.play()
+
+    def __rotating_zone(self):
+        pg.draw.rect(self.screen, self.settings.colors['red'],[2, 276, 48, 48], 1)

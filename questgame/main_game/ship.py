@@ -17,6 +17,12 @@ class Ship(pg.sprite.Sprite):
         self.explosion_animation_image = self.__load_explosion_images()
         self.rect = self.image.get_rect(x=x, y=y)
 
+        self.image2 = pg.image.load(os.path.join(self.settings.folders.images_folder, 'ship_1_48x48.xcf'))
+        self.rotated_image = None
+        self.rect_rotated_image = None
+
+        self.angle = 0
+
         self.ix_explosion = 0
         self.delay_animation = 6
         self.ticks = 0
@@ -37,6 +43,12 @@ class Ship(pg.sprite.Sprite):
 
         elif self.state == self.settings.ship_states['dead']:
             self.__reset()
+
+        elif self.state == self.settings.ship_states['rotating']:
+            self.__rotate()
+
+        elif self.state == self.settings.ship_states['rotated']:
+            self.__landing()
 
         else:
             self.rect.y += self.y_speed
@@ -95,5 +107,17 @@ class Ship(pg.sprite.Sprite):
         self.delay_animation = 6
         self.ticks = 0
 
-    def rotate(self):
-        pass
+    def __rotate(self):
+
+        if self.angle <= 180:
+            self.rotated_image = pg.transform.rotozoom(self.image2, self.angle, 1)
+            self.rect_rotated_image = self.rotated_image.get_rect(center = (26, 300))
+            self.image = self.rotated_image
+            self.rect = self.rect_rotated_image
+            self.angle += 1
+        else:
+            self.state = self.settings.ship_states['rotated']
+
+    def __landing(self):
+        if self.rect.x < 525:
+            self.rect.x += 1
